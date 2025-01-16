@@ -131,7 +131,7 @@
 \setminted[python]{linenos=true}
 \setminted[c]{linenos=true}
 \renewcommand\theFancyVerbLine{\sffamily\footnotesize\arabic{FancyVerbLine}}
-\BeforeBeginEnvironment{minted}{\begin{snugshade}}
-\AfterEndEnvironment{minted}{\end{snugshade}}
+\BeforeBeginEnvironment{minted}{\begin{snugshade}
+\AfterEndEnvironment{minted}{\end{snugshade}
 \newcommand*{\mintpy}[1]{\mintinline[bgcolor=shadecolor]{python}{#1}}
 \newcommand*{\mintc}[1]{\mintinline[bgcolor=shadecolor]{c}{#1}}
