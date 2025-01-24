@@ -65,6 +65,7 @@
 
 % Add a table of contents (comment out if you want to remove)
 \tableofcontents
+\pagebreak
 
 % ---------------------------------------------------------------
 
@@ -76,7 +77,7 @@ This is some example text.  We can insert a figure here too, and call it Figure 
 % Insert a figure
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\textwidth]{qu-logo-vertical-colour.pdf}
+    \includegraphics[width=\textwidth]{LaTex Template/qu-logo-horizontal-colour.pdf}
     %\includegraphics[width=4in]{figs/qu-logo-vertical-colour.pdf}
     %\includegraphics[height=4in]{figs/qu-logo-vertical-colour.pdf}
     %\includegraphics[width=0.5\textwidth]{figs/qu-logo-vertical-colour.pdf}
@@ -129,7 +130,7 @@ This is a subsubsection with another citation \cite[p.\ 1964]{Marshall:2004aa}. 
 
 You might also want to add URLs, like \url{https://offroad.engineering.queensu.ca} or \href{https://offroad.engineering.queensu.ca}{as a hyperlink}.  
 
-Try adding some simple code snippets, like  \mintpy{x_0 = 1.2}, or even a code block:
+Try adding some simple code snippets, like  \mintc{x_0 = 1.2}, or even a code block:
 \begin{minted}{python}
   for i in range(1, 32):
     x[i] = x[i] + 1;
@@ -140,7 +141,7 @@ The above block might be better as a figure.  There are also lots of ``algorithm
 
 % Generate bibliography with BibTeX file (e.g., bibfilename.bib).
 \bibliographystyle{ieeetr}
-\bibliography{bib/example}
+\bibliography{example}
 
 % ---------------------------------------------------------------
 
