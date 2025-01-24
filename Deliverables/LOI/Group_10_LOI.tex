@@ -3,7 +3,7 @@
 % Originally created by Joshua A. Marshall on 11 July 2013
 
 % Set document parameters (font, paper, eqn position, page style)
-\documentclass[letterpaper,fleqn,oneside]{qu-handout}
+\documentclass[letterpaper,fleqn,oneside]{template}
 
 % ---------------------------------------------------------------
 
@@ -22,11 +22,11 @@
 \newcommand{\mbf}{\mathbf}
 \newcommand*\dif{\mathop{}\!\mathrm{d}}
 
-% ---------------------------------------------------------------
+\pretolerance=1000  % Avoid breaking words too easily
+\tolerance=2000     % Allow some flexibility before hyphenating
+\emergencystretch=1em  % Extra slack to adjust spacing without hyphenating
 
-% Define some hyphenation ... add whatever you want!
-\hyphenation{aero-space} 
-\hyphenation{auton-omous}
+% ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
 
@@ -37,46 +37,22 @@
 
 % ---------------------------------------------------------------
 
-% Course information
-\renewcommand{\institution}{Queen's University at Kingston, Canada}
-\renewcommand{\coursetitle}{ELEC 443 Linear Control Systems}
-\renewcommand{\term}{Fall 2019}
-
-% ---------------------------------------------------------------
-
-% Document information
-\title{Handout --- Title of the Handout}
-\author{Joshua A.~Marshall}
-\date{\today}
-
-% ---------------------------------------------------------------
-
-% Make the first page header and footer
-\thispagestyle{title}
-
-% Start the document
-\begin{bshaded}
-  \begin{center}
-    \Large\bf\thetitle
-  \end{center}
-\end{bshaded}
-
-% ---------------------------------------------------------------
-
-% Add a table of contents (comment out if you want to remove)
-\tableofcontents
-
-% ---------------------------------------------------------------
-
-% Main body is below
-\section{Introduction}
-
-This is some example text.  We can insert a figure here too, and call it Figure \ref{fig:example}.  This figure is on page \pageref{fig:example}.  Let \LaTeX\ place the figure where it wants.  
-
-% Insert a figure
+% Title Page
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1.2cm}  
+        \Huge
+        \textbf{Letter of Intent}\\
+        \vspace{0.5cm}
+        \large
+        \vspace{2cm}
+        Prepared by Group 10\\
+        \vspace{0.8cm}
+        \textbf{Sebastien Sauter, Marlow Gaddes, and Jamie Strain}\\ 
+        % Insert a figure
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\textwidth]{qu-logo-vertical-colour.pdf}
+    \includegraphics[width=\textwidth]{LaTex Template/qu-logo-horizontal-colour.pdf}
     %\includegraphics[width=4in]{figs/qu-logo-vertical-colour.pdf}
     %\includegraphics[height=4in]{figs/qu-logo-vertical-colour.pdf}
     %\includegraphics[width=0.5\textwidth]{figs/qu-logo-vertical-colour.pdf}
@@ -84,72 +60,88 @@ This is some example text.  We can insert a figure here too, and call it Figure 
     \label{fig:example}
   \end{center}
 \end{figure}
+        \vfill
+        \small
+        Non-Binding Initial Proposal for Here and Now Delivery\\
+        \vspace{0.8cm}
+        MREN 203 - Mechatronics and Robotics Design II\\
+        \vspace{0.8cm}
+        \textbf{January 25, 2025} 
+    \end{center}
+\end{titlepage}
 
-Here is an equation
-\begin{equation}
-  \label{eqn:einstein}
-  e = mc^2,
-\end{equation}
-which is a famous equation.  You can reference equation \eqref{eqn:einstein}.
+% ---------------------------------------------------------------
 
-This equation
-\begin{equation*}
-  \dot{x} = \int_{0}^\infty y(\tau)\dif\tau
-\end{equation*}
-does not have a number.  You can use bold math for vectors or matrices, like $\mbf{v}\in\Real^2$.
+% Main body is below
+\section{About SSG Robotics}
 
-Here are some more examples.  We'll talk about more later, in Section \ref{sec:special}.
 
-\section{Another Section}
 
-This is another section.
+\section{Problem Definition}
 
-\subsection{A Subsection}
-\label{sec:special}
 
-This is a subsection with a citation \cite{Ogata:2001aa}.  There is a label on this section, which is referenced above.  You can put multiple citations together \cite{Marshall:2004aa,Ogata:2001aa}
+\section{Conceptual Overview}
 
-\subsubsection{A Subsubsection}
+In response to HND, SSG Robotics proposes a semi-autonomous mobile robot equipped to handle deliveries of goods in an airport environment upon user request.\\
 
-This is a subsubsection with another citation \cite[p.\ 1964]{Marshall:2004aa}.  You can also make tables, for example see Table \ref{tbl:example}.
+A simple overview of the sequence of events is as follows: The user (passenger or staff) requests and pays for a delivery service using a web application. The robot processes the request in a priority queue and executes the next task. Depending on the order, the system alerts a representative from the retailer to either begin making the order or to set aside the required goods. The robot proceeds to determine the optimal route to the pickup point via its path finding algorithm and navigates itself to that point with the use of its Sharp IR and LiDAR sensors. The retail representative deposits the goods into a latched compartment on the robot that is then locked. The robot once again calculates its optimal route and travels to users’ delivery point, making use of its horn or lights if necessary. The user unlocks the compartment with a custom unlocking technique and takes the goods they ordered. The user receives an estimated time of arrival calculated from the position of the robot throughout the duration of the order. For feasibility this process must occur more efficiently or faster than what the user could have done on their own.
 
-\begin{table}
-  \caption{This is a table.}
+\subsection{Solution Requirements}
+
+To execute the proposed solution SSG Robotics has outlined five key requirements that must be met during the design and prototyping phase. 
+
+\begin{enumerate}
+    \item \textbf{Time Constraint:} Must make deliveries before the user has to board their plane or in a similar amount of time that the user would do the task themselves.
+    \item \textbf{Navigation:} Must determine the global optimal route and then navigate a dynamically changing local environment.
+    \item \textbf{User Interface:} An application or website must allow the user to make the order, pay for their order and view or track the status of their order.
+    \item \textbf{Safety:} The contents of the order cannot be tampered, stolen or pose any security threat to the airport.
+    \item \textbf{Error Rate:} Little to no error is permitted.
+\end{enumerate}
+
+\subsection{Solution Assumptions}
+
+A list of reasonable assumptions has been prepared for HND. Assume:
+\begin{itemize}
+    \item The entire terminal of the airport is wheelchair accessible.
+    \item Retail representatives are trained to interact with the robot and can retrieve or prepare orders in a timeline manner. 
+    \item Retailers should be able to process online orders or be notified ahead of time. 
+    \item The user does not leave the terminal of the airport during the order. 
+    \item The user takes all the contents they ordered from the robot. 
+    \item  The robot is not physically disabled by other people in the airport. 
+\end{itemize}
+
+The applications of the robot are not limited to small deliveries to flight passengers. Future considerations for this technology can include transporting high value items from gate to gate for airlines, transportation of small carry-on luggage from gate to gate in time sensitive situations and potentially assisting visitors with directions to their gate or to baggage claim.
+
+
+
+
+
+
+\section{Strategic Plan}
+
+\textbf{Table \ref{tbl:deliverables}}.
+
+\begin{table}[htbp]
+  \caption{Project Deliverables}
   \begin{center}
-    \begin{tabular}{lc}
+    \begin{tabular}{lrc}
       \toprule
-      \bf First column & \bf Second column \\ \midrule
-      (a) Row 1 & 12.3 \\
-      (b) Row 2 & 13 \\
+      \bf Deliverable & \bf Submission \\ \midrule
+      Letter of Intent & Week 2 \\
+      Technical Update 1 & Week 4 \\
+      Conceptual Design Report & Week 7 \\
+      Technical Update 2 & Week 10 \\
+      Final Design Exhibit & Week 12 \\
       \bottomrule
     \end{tabular}
   \end{center}
-  \label{tbl:example}
+  \label{tbl:deliverables}
 \end{table}%
 
-You might also want to add URLs, like \url{https://offroad.engineering.queensu.ca} or \href{https://offroad.engineering.queensu.ca}{as a hyperlink}.  
 
-Try adding some simple code snippets, like  \mintpy{x_0 = 1.2}, or even a code block:
-\begin{minted}{python}
-  for i in range(1, 32):
-    x[i] = x[i] + 1;
-\end{minted}
+
+
 The above block might be better as a figure.  There are also lots of ``algorithm'' packages for LaTeX, which you might use for writing pseudo-code.  Notice in the previous sentence how we write quotes in \LaTeX.
-
-% ---------------------------------------------------------------
-
-% Generate bibliography with BibTeX file (e.g., bibfilename.bib).
-\bibliographystyle{ieeetr}
-\bibliography{bib/example}
-
-% ---------------------------------------------------------------
-
-\appendix
-
-\section{First Appendix}
-\label{sec:appendix}
-
-You can make appendices too and refer to this appendix as Appendix \ref{sec:appendix}.
 
 % ---------------------------------------------------------------
 

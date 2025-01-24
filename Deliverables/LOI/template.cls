@@ -106,7 +106,7 @@
 \RequirePackage[colorlinks]{hyperref}
 \hypersetup{
     colorlinks=true,
-    linkcolor=red,
+    linkcolor=black,
     citecolor=green,
     filecolor=magenta,
     urlcolor=cyan
