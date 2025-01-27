@@ -57,6 +57,10 @@ const int T = 1000;
 long t_now = 0;
 long t_last = 0;
 
+// Proportional Control Variables
+Vd = 0.5; // Desired wheel speed is 0.5 m/s
+
+
 // This function is called when SIGNAL_A goes HIGH
 void decodeEncoderTicksR()
 {
@@ -184,8 +188,13 @@ void loop()
         encoder_ticksL = 0;
     }
 
+    // Find the error in wheel speed
+    e_nowR = Vd - v_R;
+    e_nowL = Vd - v_L;
+    
     // Set the wheel motor PWM command [0-255] org. 128
-    u = 180;
+    uint8_t u_L = 180 + kp * e_nowL;
+    uint8_t u_R = 180 + kp * e_nowR;
 
     // Select a direction
     digitalWrite(I1, LOW);
@@ -194,6 +203,6 @@ void loop()
     digitalWrite(I4, LOW);
 
     // PWM command to the motor driver
-    analogWrite(EA, u);
-    analogWrite(EB, u);
+    analogWrite(EA, uR);
+    analogWrite(EB, uL);
 }
