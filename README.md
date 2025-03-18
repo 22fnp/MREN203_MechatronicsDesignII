@@ -9,3 +9,5 @@ Authors: Sebastien Sauter, Jamie Strain, and Marlow Gaddes
 
 `source /opt/ros/humble/setup.bash`
 
+`ls /dev/serial/by-id/`
+
