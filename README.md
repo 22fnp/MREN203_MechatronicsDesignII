@@ -14,6 +14,6 @@ list serial id `ls /dev/serial/by-id/` = `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A1
 open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>` = `screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600` use ctrl + a, then k, then y to kill
 
 to run serial bridge node `ros2 run serial_driver serial_bridge --ros-args --params-file ./src/transport_drivers/serial_driver/params/example.params.yaml`
-
-`ros2 run serial_driver serial_bridge --ros-args -p serial_port:=/dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 -p baud_rate:=9600 -p flow_control:=none -p parity:=none -p stop_bits:=1`
+OR
+`ros2 run serial_driver serial_bridge --ros-args -p serial_port:=/dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 -p baud_rate:=9600 -p flow_control:=none -p parity:=none -p stop_bits:="'1'"`
 
