@@ -11,7 +11,7 @@ source ROS2 environment `source /opt/ros/humble/setup.bash`
 
 list serial id `ls /dev/serial/by-id/` = `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01`
 
-open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>` = `screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600`
+open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>` = `screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600` use ctrl + a, then k, then y to kill
 
 to run serial bridge node `ros2 run serial_driver serial_bridge --ros-args --params-file ./src/transport_drivers/serial_driver/params/example.params.yaml`
 
