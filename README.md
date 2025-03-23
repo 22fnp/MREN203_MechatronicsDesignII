@@ -7,6 +7,8 @@ Authors: Sebastien Sauter, Jamie Strain, and Marlow Gaddes
 
 ssh into the pi from cmd `ssh -l group10 192.168.50.210` 
 
+tailscale ip address `100.97.116.103`
+
 source ROS2 environment `source /opt/ros/humble/setup.bash`
 
 list serial id `ls /dev/serial/by-id/` = `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01`
