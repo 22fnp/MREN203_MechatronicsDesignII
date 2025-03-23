@@ -17,3 +17,6 @@ to run serial bridge node `ros2 run serial_driver serial_bridge --ros-args --par
 OR
 `ros2 run serial_driver serial_bridge --ros-args -p serial_port:=/dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 -p baud_rate:=9600 -p flow_control:=none -p parity:=none -p stop_bits:="'1'"`
 
+list all running ros2 nodes `ros2 node list`
+
+list all running ros2 topics `ros2 topic list`
