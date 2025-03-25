@@ -26,3 +26,5 @@ list all running ros2 topics `ros2 topic list`
 Launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.py`
 
 full read and write access for the serial port `sudo chmod 777 /dev/ttyACM0`
+
+to launch serial bridge node `ros2 launch serial_driver serial_driver_bridge_node.launch.py`
