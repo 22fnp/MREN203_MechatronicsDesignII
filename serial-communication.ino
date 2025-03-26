@@ -164,8 +164,12 @@ void loop() {
     omega = compute_vehicle_rate(v_L, v_R);
       
     // Serial print commands, TX for transmission
-    Serial.print("TX_V:" + String(v) + ";"); // Cast v to string for Pi
-    Serial.print("TX_W:" + String(omega) + ";");
+    Serial.print("TX_V");
+    Serial.print(v);
+    Serial.print(";");
+    Serial.print("TX_W:")
+    Serial.print(omega);
+    Serial.print(";");
     
     // Record the current time [ms]
     t_last = t_now;
