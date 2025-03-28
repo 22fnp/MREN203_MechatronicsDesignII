@@ -30,3 +30,5 @@ full read and write access for the serial port `sudo chmod 777 /dev/ttyACM0`
 to launch serial bridge node `ros2 launch serial_driver serial_driver_bridge_node.launch.py`
 
 to launch the serial_motor_driver and keyboard_controller_node go to correct directory `python3 <node_name>`
+
+`rqt`
