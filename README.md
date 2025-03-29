@@ -11,24 +11,23 @@ tailscale ip address `100.97.116.103`
 
 source ROS2 environment `source /opt/ros/humble/setup.bash`
 
-list serial id `ls /dev/serial/by-id/` = `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01`
+list serial id `ls /dev/serial/by-id/` 
+>arduino serial id `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01`
 
-open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>` = `screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600` use ctrl + a, then k, then y to kill
+open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>` 
+>`screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600` 
+>use ctrl + a, then k, then y to kill
 
-to run serial bridge node `ros2 run serial_driver serial_bridge --ros-args --params-file ./src/transport_drivers/serial_driver/params/example.params.yaml`
-OR
-`ros2 run serial_driver serial_bridge --ros-args -p serial_port:=/dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 -p baud_rate:=9600 -p flow_control:=none -p parity:=none -p stop_bits:="'1'"`
-
-list all running ros2 nodes `ros2 node list`
-
-list all running ros2 topics `ros2 topic list`
-
-Launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.py`
+launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.py`
 
 full read and write access for the serial port `sudo chmod 777 /dev/ttyACM0`
 
-to launch serial bridge node `ros2 launch serial_driver serial_driver_bridge_node.launch.py`
-
-to launch the serial_motor_driver and keyboard_controller_node go to correct directory `python3 <node_name>`
-
-`rqt`
+basic ros2 commands
+```
+ros2 node list
+ros2 topic list
+ros2 topic echo <topic_name>
+python3 <node_name>
+ros2 launch <package_name> <node_name.launch.py>
+EX: ros2 launch serial_driver serial_driver_bridge_node.launch.py
+```
