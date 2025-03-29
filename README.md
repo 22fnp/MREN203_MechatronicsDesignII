@@ -22,7 +22,7 @@ launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.p
 
 full read and write access for the serial port `sudo chmod 777 /dev/ttyACM0`
 
-basic ros2 commands
+basic ROS2 commands
 ```
 ros2 node list
 ros2 topic list
