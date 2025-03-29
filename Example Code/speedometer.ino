@@ -9,6 +9,8 @@
 
 */
 
+#include <Arduino.h>
+
 // Wheel PWM pin (must be a PWM pin)
 int EA = 6;//6
 int EB = 5;//5

@@ -60,12 +60,43 @@ double v_R = 0.0;
 double v = 0.0;
 double omega = 0.0;
 
-// Sampling interval for measurements [ms]
-const int T = 500;
+// Sampling period [ms]
+const int T = 50;
 
 // Counters for milliseconds during interval
 long t_now = 0;
 long t_last = 0;
+
+// Desired wheel speed
+float v_desired = 0; // Scalar quantity, 0.7 m/s is an appropriate desired speed
+int v_direction = 0; // Direction case variable
+
+// Desired turning rate
+float omega_desired = 0;
+
+// Proportional error
+double e_nowR;
+double e_nowL;
+
+// Integral error
+double e_intLT = 0;
+double e_intRT = 0;
+double e_intL[] = {0, 0, 0, 0, 0};
+double e_intR[] = {0, 0, 0, 0, 0};
+
+// Counter variable for PID
+uint8_t i = 0;
+
+// Controller constants
+double k_p = 2000; 
+double k_i = 180; 
+
+// Set the wheel motor PWM command [0-255] org. 128
+short u_L;
+short u_R;
+
+// Variable to disable integral contributions
+bool antiWindUp = 1;
 
 /*
  * ----------------------
@@ -103,6 +134,53 @@ double compute_vehicle_rate(double v_L, double v_R) {
   double omega;
   omega = 1.0 / ELL * (v_R - v_L);
   return omega;
+}
+
+// Compute left wheel speed from vehicle translational velocity and angular turning rate
+double compute_left_wheel_speed(double V, double Omega) {
+  double V_L;
+  V_L = V - (ELL / 2) * Omega;
+  return V_L;
+}
+
+double compute_right_wheel_speed(double V, double Omega) {
+  double V_R;
+  V_R = V + (ELL / 2) * Omega;
+  return V_R;
+}
+
+// PI controller function with antiWindUp
+short PI_controller(double e_now, double e_intT, double k_P, double k_I) {
+  short u;
+  u = (short)((k_P * e_now) + (k_I * e_intT * antiWindUp));
+  if (u > 255)
+  {
+    u = 255;
+    antiWindUp = 0;
+  }
+  else {
+    antiWindUp = 1;
+  }
+  return u;
+}
+
+// Determine the rovers direction: forward, reverse, left, right
+int determine_v_direction(double V, double Omega) {
+  int direction;
+  if (Omega = 0) {
+    if (V >= 0) {
+      direction = 1;
+    } else {
+      direction = 2;
+    }
+  } else {
+    if (Omega > 0) {
+      direction = 4;
+    } else {
+      direction = 3;
+    }
+  }
+  return direction;
 }
 
 /*
@@ -162,15 +240,39 @@ void loop() {
     // Compute vehicle speed and rate
     v = compute_vehicle_speed(v_L, v_R);
     omega = compute_vehicle_rate(v_L, v_R);
-      
+    
     // Serial print commands, TX for transmission
     Serial.print("TX_V");
     Serial.print(v);
-    Serial.print(";");
-    Serial.print("TX_W:")
+    Serial.print("\t");
+    Serial.print("TX_W:");
     Serial.print(omega);
-    Serial.print(";");
+    Serial.print("\n");
     
+    // READ IN FROM JSON 
+    // REMEMBER TO SET A DIRECTION
+    double v_R_desired = 0.0;
+    double V_L_desired = 0.0;
+    
+    // Find the proportional error in wheel speed.
+    e_nowR = v_R_desired - v_R;
+    e_nowL = V_L_desired - v_L;
+
+    // Integral error NEED TO UPDATE TO SUM OF ONLY RELEVANT PREV ERRORS USE QUEUE.
+    e_intRT -= e_intR[i];   // Subtract oldest value from integral error sum
+    e_intR[i] = e_nowR;     // Update the oldest calue of integral error array
+    e_intRT += e_intR[i];   // Add updated value to array
+
+    e_intLT -= e_intL[i];   // Same as prev
+    e_intL[i] = e_nowL;
+    e_intLT += e_intL[i];
+
+    i = (i + 1) % 5;        // Increment i and reset i when equal to 5
+    
+    // Call PI controller
+    u_L = PI_controller(e_nowL, e_intLT, k_p, k_i);
+    u_R = PI_controller(e_nowR, e_intRT, k_p, k_i);
+
     // Record the current time [ms]
     t_last = t_now;
 
@@ -179,4 +281,39 @@ void loop() {
     encoder_ticksL = 0;
   }
 
+  // Switch case to set the direction of the motors
+  switch (v_direction) {
+    case 1:
+      // Forward
+      digitalWrite(I1, HIGH);
+      digitalWrite(I2, LOW);
+      digitalWrite(I3, LOW);
+      digitalWrite(I4, HIGH);
+      break;
+    case 2:
+      // Reverse
+      digitalWrite(I1, LOW);
+      digitalWrite(I2, HIGH);
+      digitalWrite(I3, HIGH);
+      digitalWrite(I4, LOW);
+      break;
+    case 3:
+      // Right
+      digitalWrite(I1, LOW);
+      digitalWrite(I2, HIGH);
+      digitalWrite(I3, LOW);
+      digitalWrite(I4, HIGH);
+      break;
+    case 4:
+      // Left
+      digitalWrite(I1, HIGH);
+      digitalWrite(I2, LOW);
+      digitalWrite(I3, HIGH);
+      digitalWrite(I4, LOW);
+      break;
+  }
+
+  // PWM command to the motor driver
+  analogWrite(EA, u_R);
+  analogWrite(EB, u_L);
 }
