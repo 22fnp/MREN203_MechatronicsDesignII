@@ -9,6 +9,7 @@
  */
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 /*
  * ----------------------
@@ -73,6 +74,10 @@ int v_direction = 0; // Direction case variable
 
 // Desired turning rate
 float omega_desired = 0;
+
+// Individual desired wheel speeds
+double v_R_desired = 0.0;
+double V_L_desired = 0.0;
 
 // Proportional error
 double e_nowR;
@@ -193,6 +198,8 @@ void setup() {
       
   // Open the serial port at 115200 bps
   Serial.begin(115200);
+  while (!Serial)
+    continue;
 
   // Set the pin modes for the motor driver
   pinMode(EA, OUTPUT);
@@ -250,11 +257,28 @@ void loop() {
     Serial.print("\n");
     
     // READ IN FROM JSON 
+
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, json);
+
+    // Deserialize the JSON document
+    DeserializationError error = deserializeJson(doc, json);
+
+    // Test if parsing succeeds.
+    if (error) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(error.f_str());
+      return;
+    }
+    
+    v_desired = doc["data"][0];
+    omega_desired = doc["data"][1];
+
     // REMEMBER TO SET A DIRECTION
     double v_R_desired = 0.0;
     double V_L_desired = 0.0;
     
-    // Find the proportional error in wheel speed.
+    // Find the proportional error in wheel speed
     e_nowR = v_R_desired - v_R;
     e_nowL = V_L_desired - v_L;
 
