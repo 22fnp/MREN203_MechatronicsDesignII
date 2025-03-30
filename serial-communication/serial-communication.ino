@@ -169,16 +169,16 @@ short PI_controller(double e_now, double e_intT, double k_P, double k_I) {
 }
 
 // Determine the rovers direction: forward, reverse, left, right
-int determine_v_direction(double V, double Omega) {
+int determine_v_direction(float V, float Omega) {
   int direction;
-  if (Omega = 0) {
-    if (V >= 0) {
+  if (Omega == 0.0) {
+    if (V >= 0.0) {
       direction = 1;
     } else {
       direction = 2;
     }
   } else {
-    if (Omega > 0) {
+    if (Omega > 0.0) {
       direction = 4;
     } else {
       direction = 3;
@@ -291,6 +291,11 @@ void loop() {
     v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
     v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
     v_direction = determine_v_direction(v_desired, omega_desired);
+
+    // Take absolute value before sending to PI controller
+    // v_R_desired = abs(v_R_desired);
+    // v_L_desired = abs(v_L_desired);
+    v_R_desired = v_R_desired * (-1);
     
     Serial.print("Direction: ");
     Serial.print(v_direction);
