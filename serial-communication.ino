@@ -249,16 +249,21 @@ void loop() {
     omega = compute_vehicle_rate(v_L, v_R);
     
     // Serial print commands, TX for transmission
+    /*
     Serial.print("TX_V");
     Serial.print(v);
     Serial.print("\t");
     Serial.print("TX_W:");
     Serial.print(omega);
     Serial.print("\n");
-    
+    */
+
     // READ IN FROM JSON 
 
-    DynamicJsonDocument doc(2048);
+    String json = Serial.readStringUntil('\n');
+    json.trim();
+
+    StaticJsonDocument<256> doc;
     deserializeJson(doc, json);
 
     // Deserialize the JSON document
@@ -273,6 +278,12 @@ void loop() {
     
     v_desired = doc["data"][0];
     omega_desired = doc["data"][1];
+
+    Serial.print("v_desired: ");
+    Serial.print(v_desired);
+    Serial.print("\t");
+    Serial.print("omega_desired: ");
+    Serial.println(omega_desired);
 
     // REMEMBER TO SET A DIRECTION
     double v_R_desired = 0.0;
@@ -338,6 +349,6 @@ void loop() {
   }
 
   // PWM command to the motor driver
-  analogWrite(EA, u_R);
-  analogWrite(EB, u_L);
+  // analogWrite(EA, u_R);
+  // analogWrite(EB, u_L);
 }
