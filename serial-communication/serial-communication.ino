@@ -292,7 +292,8 @@ void loop() {
     v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
     v_direction = determine_v_direction(v_desired, omega_desired);
 
-    // Take absolute value before sending to PI controller
+    
+    // Take absolute value before sending to PI controller REMINDER TO MAKE ABS VAL FUNCTION
     // v_R_desired = abs(v_R_desired);
     // v_L_desired = abs(v_L_desired);
     v_R_desired = v_R_desired * (-1);
