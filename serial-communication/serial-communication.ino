@@ -279,17 +279,29 @@ void loop() {
     omega_desired = doc["angular_rate"].as<float>();
 
     // Troubleshooting measure
+    /*
     Serial.print("v_desired: ");
     Serial.print(v_desired);
     Serial.print("\t");
     Serial.print("omega_desired: ");
     Serial.println(omega_desired);
+    */
 
     // Determine the individual wheel speeds and direction
     v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
     v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
     v_direction = determine_v_direction(v_desired, omega_desired);
     
+    Serial.print("Direction: ");
+    Serial.print(v_direction);
+    Serial.print("v_R: ");
+    Serial.print("\t");
+    Serial.print(v_R_desired);
+    Serial.print("\t");
+    Serial.print("v_L: ");
+    Serial.println(v_L_desired);
+
+
     // Find the proportional error in wheel speed
     e_nowR = v_R_desired - v_R;
     e_nowL = v_L_desired - v_L;
