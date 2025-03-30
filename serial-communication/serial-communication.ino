@@ -257,41 +257,38 @@ void loop() {
     Serial.print("\n");
     */
 
-    // READ IN FROM JSON 
-
+    // Read in json msg from pi
     String json = Serial.readStringUntil('\n');
     json.trim();
 
+    // Create json object, 256 bits gives more space than needed
     StaticJsonDocument<256> doc;
 
     // Deserialize the JSON document
     DeserializationError error = deserializeJson(doc, json);
 
-    // Test if parsing succeeds.
-    
+    // Test if parsing succeeds
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.f_str());
       return;
     }
     
-    
+    // Transfer data from doc object to variables
     v_desired = doc["translational_speed"].as<float>();
     omega_desired = doc["angular_rate"].as<float>();
 
+    // Troubleshooting measure
     Serial.print("v_desired: ");
     Serial.print(v_desired);
     Serial.print("\t");
     Serial.print("omega_desired: ");
     Serial.println(omega_desired);
 
-    
-    // REMEMBER TO SET A DIRECTION
-
+    // Determine the individual wheel speeds and direction
     v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
     v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
-
-    v_direction = 1;
+    v_direction = determine_v_direction(v_desired, omega_desired);
     
     // Find the proportional error in wheel speed
     e_nowR = v_R_desired - v_R;
