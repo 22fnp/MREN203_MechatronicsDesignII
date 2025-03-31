@@ -238,6 +238,7 @@ void setup() {
 void loop() {
   // Get the elapsed time [ms]
   t_now = millis();
+  delay(10);
 
   if (t_now - t_last >= T) {
     // Estimate the rotational speed [rad/s]
@@ -261,27 +262,37 @@ void loop() {
     Serial.print(omega);
     Serial.print("\n");
     */
+    if (Serial.available() > 0){
+      // Read in json msg from pi
+      String json = Serial.readStringUntil('\n');
+      json.trim();
 
-    // Read in json msg from pi
-    String json = Serial.readStringUntil('\n');
-    json.trim();
+      // Create json object, 256 bits gives more space than needed
+      StaticJsonDocument<256> doc;
 
-    // Create json object, 256 bits gives more space than needed
-    StaticJsonDocument<256> doc;
+      // Deserialize the JSON document
+      DeserializationError error = deserializeJson(doc, json);
 
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, json);
+       // Test if parsing succeeds
+      if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.f_str());
+        return;
+      } 
 
-    // Test if parsing succeeds
-    if (error) {
-      Serial.print(F("deserializeJson() failed: "));
-      Serial.println(error.f_str());
-      return;
+      // Transfer data from doc object to variables
+      v_desired = doc["translational_speed"].as<float>();
+      omega_desired = doc["angular_rate"].as<float>();
     }
+
     
-    // Transfer data from doc object to variables
-    v_desired = doc["translational_speed"].as<float>();
-    omega_desired = doc["angular_rate"].as<float>();
+
+   
+    
+   
+    
+
+    Serial.flush();
 
     // Troubleshooting prints
     /*
