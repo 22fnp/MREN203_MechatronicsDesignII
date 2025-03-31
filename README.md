@@ -20,6 +20,8 @@ open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>`
 
 launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.py`
 
+launch gazebo `ing gazebo blank.sdf` (replace blank with map sdf file)
+
 full read and write access for the serial port `sudo chmod 777 /dev/ttyACM0`
 
 basic ROS2 commands
