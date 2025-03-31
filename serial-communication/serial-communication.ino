@@ -187,6 +187,11 @@ int determine_v_direction(float V, float Omega) {
   return direction;
 }
 
+float abs_val(float a) {
+  if (a < 0) {a = a * (-1);}
+  return a;
+}
+
 /*
  * ----------------------
  * SETUP CODE
@@ -278,7 +283,7 @@ void loop() {
     v_desired = doc["translational_speed"].as<float>();
     omega_desired = doc["angular_rate"].as<float>();
 
-    // Troubleshooting measure
+    // Troubleshooting prints
     /*
     Serial.print("v_desired: ");
     Serial.print(v_desired);
@@ -294,10 +299,10 @@ void loop() {
 
     
     // Take absolute value before sending to PI controller REMINDER TO MAKE ABS VAL FUNCTION
-    // v_R_desired = abs(v_R_desired);
-    // v_L_desired = abs(v_L_desired);
-    v_R_desired = v_R_desired * (-1);
+    v_R_desired = abs_val(v_R_desired);
+    v_L_desired = abs_val(v_L_desired);    
     
+    // Troubleshooting prints
     Serial.print("Direction: ");
     Serial.print(v_direction);
     Serial.print("v_R: ");
@@ -306,7 +311,6 @@ void loop() {
     Serial.print("\t");
     Serial.print("v_L: ");
     Serial.println(v_L_desired);
-
 
     // Find the proportional error in wheel speed
     e_nowR = v_R_desired - v_R;
