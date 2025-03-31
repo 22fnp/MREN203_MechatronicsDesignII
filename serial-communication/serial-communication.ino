@@ -238,7 +238,28 @@ void setup() {
 void loop() {
   // Get the elapsed time [ms]
   t_now = millis();
-  delay(10);
+
+  if (Serial.available() > 0){
+    // Read in json msg from pi
+    String json = Serial.readStringUntil('\n');
+    json.trim();
+
+    // Create json object, 256 bits gives more space than needed
+    StaticJsonDocument<256> doc;
+
+    // Deserialize the JSON document
+    DeserializationError error = deserializeJson(doc, json);
+
+     // Test if parsing succeeds
+    if (!error) {
+      // Transfer data from doc object to variables
+      v_desired = doc["translational_speed"].as<float>();
+      omega_desired = doc["angular_rate"].as<float>();
+      } else {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(error.f_str());
+    }
+  }
 
   if (t_now - t_last >= T) {
     // Estimate the rotational speed [rad/s]
@@ -262,37 +283,8 @@ void loop() {
     Serial.print(omega);
     Serial.print("\n");
     */
-    if (Serial.available() > 0){
-      // Read in json msg from pi
-      String json = Serial.readStringUntil('\n');
-      json.trim();
 
-      // Create json object, 256 bits gives more space than needed
-      StaticJsonDocument<256> doc;
-
-      // Deserialize the JSON document
-      DeserializationError error = deserializeJson(doc, json);
-
-       // Test if parsing succeeds
-      if (error) {
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error.f_str());
-        return;
-      } 
-
-      // Transfer data from doc object to variables
-      v_desired = doc["translational_speed"].as<float>();
-      omega_desired = doc["angular_rate"].as<float>();
-    }
-
-    
-
-   
-    
-   
-    
-
-    Serial.flush();
+    // INSERT JSON READING HERE IF CURRENT FAILS
 
     // Troubleshooting prints
     /*
@@ -307,7 +299,6 @@ void loop() {
     v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
     v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
     v_direction = determine_v_direction(v_desired, omega_desired);
-
     
     // Take absolute value before sending to PI controller REMINDER TO MAKE ABS VAL FUNCTION
     v_R_desired = abs_val(v_R_desired);
