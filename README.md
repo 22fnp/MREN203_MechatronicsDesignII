@@ -11,6 +11,10 @@ tailscale ip address `100.97.116.103`
 
 source ROS2 environment `source /opt/ros/humble/setup.bash`
 
+source install to load env. variables `source install/setup.bash`
+
+source bash to the terminal `source .bashrc`
+
 list serial id `ls /dev/serial/by-id/` 
 >arduino serial id `usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01`
 
@@ -33,5 +37,3 @@ python3 <node_name>
 ros2 launch <package_name> <node_name.launch.py>
 EX: ros2 launch serial_driver serial_driver_bridge_node.launch.py
 ```
-
-`source install/setup.bash`
