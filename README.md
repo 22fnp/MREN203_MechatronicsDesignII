@@ -33,3 +33,5 @@ python3 <node_name>
 ros2 launch <package_name> <node_name.launch.py>
 EX: ros2 launch serial_driver serial_driver_bridge_node.launch.py
 ```
+
+`source install/setup.bash`
