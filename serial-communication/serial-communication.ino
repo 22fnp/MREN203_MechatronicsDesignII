@@ -3,7 +3,7 @@
  * file serial-communication.ino
  * author Sebastien Sauter
  * description Complete Arduino program for serial communication on Lynxmotion Rover
- * version 1.0
+ * version 2.0
  * date 2025-03-26
  *
  */
