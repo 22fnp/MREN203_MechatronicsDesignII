@@ -1,7 +1,7 @@
  
 #  file keyboard_controller_tester.py
 #  author Sebastien Sauter
-#  description Complete keyboard controller for ROS2 node, used for testing
+#  description Complete keyboard controller for ROS2 node, used for testing. Must use space bar to stop movement.
 #  version 1.0
 #  date 2025-03-30
 
