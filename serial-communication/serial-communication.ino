@@ -1,9 +1,9 @@
 /*
 
    file serial-communication.ino
-   author Sebastien Sauter
+   authors Sebastien Sauter, Jamie Strain, Marlow Gaddes
    description Complete Arduino program for serial communication on Lynxmotion Rover
-   version 3.0
+   version 3.1
    date 2025-03-26
 
 */
@@ -69,7 +69,7 @@ long t_last = 0;
 
 // Desired wheel speed
 float v_desired = 0; // Scalar quantity, 0.7 m/s is an appropriate desired speed
-float v_desired_prev = 0;
+float v_desired_prev = 0; // Holds previous desired value to avoid unwanted recomputation
 int v_direction = 0; // Direction case variable
 
 
@@ -228,10 +228,6 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(SIGNAL_AR), decodeEncoderTicksR, RISING);
   attachInterrupt(digitalPinToInterrupt(SIGNAL_AL), decodeEncoderTicksL, RISING);
 
-  // Print a message
-  //  Serial.print("Program initialized.");
-  //  Serial.print("\n");
-
 }
 
 /*
@@ -243,34 +239,6 @@ void setup() {
 void loop() {
   // Get the elapsed time [ms]
   t_now = millis();
-
-
-
-
-  //    // Read in json msg from pi
-  //    String json = Serial.readStringUntil('\n');
-  //    json.trim();
-  //
-  //    Serial.print("JSON: ");
-  //    Serial.println(json);
-  //
-  //    // Create json object, 256 bits gives more space than needed
-  //    StaticJsonDocument<256> doc;
-  //
-  //    // Deserialize the JSON document
-  //    DeserializationError error = deserializeJson(doc, json);
-  //
-  //     // Test if parsing succeeds
-  //    if (!error) {
-  //      // Transfer data from doc object to variables
-  //      v_desired = doc["translational_speed"].as<float>();
-  //      omega_desired = doc["angular_rate"].as<float>();
-  //      } else {
-  //      Serial.print(F("deserializeJson() failed: "));
-  //      Serial.println(error.f_str());
-  //      return;
-  //    }
-
 
   if (t_now - t_last >= T) {
     // Estimate the rotational speed [rad/s]
@@ -285,18 +253,7 @@ void loop() {
     v = compute_vehicle_speed(v_L, v_R);
     omega = compute_vehicle_rate(v_L, v_R);
 
-    // Serial print commands, TX for transmission
-    /*
-      Serial.print("TX_V");
-      Serial.print(v);
-      Serial.print("\t");
-      Serial.print("TX_W:");
-      Serial.print(omega);
-      Serial.print("\n");
-    */
-
-    // INSERT JSON READING HERE IF CURRENT FAILS
-
+    // Json reading
     if (Serial.available() > 0) {
       int index = 0;
       JsonDocument doc;
@@ -311,23 +268,13 @@ void loop() {
 
       delayMicroseconds(300);
 
+      // Pull in the variables from json doc
       deserializeJson(doc, jsonBuffer);
       v_desired = doc["t"].as<float>();
       omega_desired = doc["a"].as<float>();
     }
 
     if (v_desired != v_desired_prev || omega_desired != omega_desired_prev ) {
-
-
-
-      // Troubleshooting prints
-      /*
-        Serial.print("v_desired: ");
-        Serial.print(v_desired);
-        Serial.print("\t");
-        Serial.print("omega_desired: ");
-        Serial.println(omega_desired);
-      */
 
       // Determine the individual wheel speeds and direction
       v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
@@ -337,16 +284,6 @@ void loop() {
     // Take absolute value before sending to PI controller REMINDER TO MAKE ABS VAL FUNCTION
     v_R_desired = abs_val(v_R_desired);
     v_L_desired = abs_val(v_L_desired);
-
-    // Troubleshooting prints
-    //    Serial.print("Direction: ");
-    //    Serial.print(v_direction);
-    //    Serial.print("v_R: ");
-    //    Serial.print("\t");
-    //    Serial.print(v_R_desired);
-    //    Serial.print("\t");
-    //    Serial.print("v_L: ");
-    //    Serial.println(v_L_desired);
 
     v_R = abs_val(v_R);
     v_L = abs_val(v_L);
@@ -377,6 +314,7 @@ void loop() {
     encoder_ticksR = 0;
     encoder_ticksL = 0;
 
+    // Save the current desired velocities as the previous for next iteration
     v_desired_prev = v_desired;
     omega_desired_prev = omega_desired;
 
