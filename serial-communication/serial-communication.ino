@@ -1,22 +1,22 @@
 /*
- * 
- * file serial-communication.ino
- * author Sebastien Sauter
- * description Complete Arduino program for serial communication on Lynxmotion Rover
- * version 2.0
- * date 2025-03-26
- *
- */
+
+   file serial-communication.ino
+   author Sebastien Sauter
+   description Complete Arduino program for serial communication on Lynxmotion Rover
+   version 3.0
+   date 2025-03-26
+
+*/
 
 #include <ArduinoJson.h>
 
 /*
- * ----------------------
- * VARIABLE DECLARATIONS
- * ----------------------
- */
+   ----------------------
+   VARIABLE DECLARATIONS
+   ----------------------
+*/
 
- // Motor driver speed PWM pin (must be a PWM pin)
+// Motor driver speed PWM pin (must be a PWM pin)
 int EA = 6;
 int EB = 5;
 
@@ -69,10 +69,13 @@ long t_last = 0;
 
 // Desired wheel speed
 float v_desired = 0; // Scalar quantity, 0.7 m/s is an appropriate desired speed
+float v_desired_prev = 0;
 int v_direction = 0; // Direction case variable
+
 
 // Desired turning rate
 float omega_desired = 0;
+float omega_desired_prev = 0;
 
 // Individual desired wheel speeds
 double v_R_desired = 0.0;
@@ -92,8 +95,8 @@ double e_intR[] = {0, 0, 0, 0, 0};
 uint8_t i = 0;
 
 // Controller constants
-double k_p = 2000; 
-double k_i = 180; 
+double k_p = 2000;
+double k_i = 180;
 
 // Set the wheel motor PWM command [0-255] org. 128
 short u_L;
@@ -103,27 +106,27 @@ short u_R;
 bool antiWindUp = 1;
 
 /*
- * ----------------------
- * FUNCTION DECLARATIONS
- * ----------------------
- */
- 
+   ----------------------
+   FUNCTION DECLARATIONS
+   ----------------------
+*/
+
 void decodeEncoderTicksR() { // Function is called when SIGNAL_A goes HIGH
-    if (digitalRead(SIGNAL_BR) == LOW) {
-        encoder_ticksR--; // SIGNAL_A leads SIGNAL_B, so count one way
-    }
-    else {
-        encoder_ticksR++; // SIGNAL_B leads SIGNAL_A, so count the other way
-    }
+  if (digitalRead(SIGNAL_BR) == LOW) {
+    encoder_ticksR--; // SIGNAL_A leads SIGNAL_B, so count one way
+  }
+  else {
+    encoder_ticksR++; // SIGNAL_B leads SIGNAL_A, so count the other way
+  }
 }
 
 void decodeEncoderTicksL() {
-    if (digitalRead(SIGNAL_BL) == LOW) {
-        encoder_ticksL--;
-    }
-    else {
-        encoder_ticksL++;
-    }
+  if (digitalRead(SIGNAL_BL) == LOW) {
+    encoder_ticksL--;
+  }
+  else {
+    encoder_ticksL++;
+  }
 }
 
 // Compute vehicle translational speed [m/s]
@@ -188,18 +191,20 @@ int determine_v_direction(float V, float Omega) {
 }
 
 float abs_val(float a) {
-  if (a < 0) {a = a * (-1);}
+  if (a < 0) {
+    a = a * (-1);
+  }
   return a;
 }
 
 /*
- * ----------------------
- * SETUP CODE
- * ----------------------
- */
+   ----------------------
+   SETUP CODE
+   ----------------------
+*/
 
 void setup() {
-      
+
   // Open the serial port at 115200 bps
   Serial.begin(115200);
   while (!Serial)
@@ -212,60 +217,66 @@ void setup() {
   pinMode(EB, OUTPUT);
   pinMode(I3, OUTPUT);
   pinMode(I4, OUTPUT);
-  
+
   // Set the pin modes for the encoders
   pinMode(SIGNAL_AR, INPUT);
   pinMode(SIGNAL_BR, INPUT);
   pinMode(SIGNAL_AL, INPUT);
   pinMode(SIGNAL_BL, INPUT);
-  
+
   // Every time the pin goes high, this is a pulse
   attachInterrupt(digitalPinToInterrupt(SIGNAL_AR), decodeEncoderTicksR, RISING);
   attachInterrupt(digitalPinToInterrupt(SIGNAL_AL), decodeEncoderTicksL, RISING);
-  
+
   // Print a message
-  Serial.print("Program initialized.");
-  Serial.print("\n");
+  //  Serial.print("Program initialized.");
+  //  Serial.print("\n");
 
 }
 
 /*
- * ----------------------
- * MAIN LOOP
- * ----------------------
- */
+   ----------------------
+   MAIN LOOP
+   ----------------------
+*/
 
 void loop() {
   // Get the elapsed time [ms]
   t_now = millis();
 
-  if (Serial.available() > 0){
-    // Read in json msg from pi
-    String json = Serial.readStringUntil('\n');
-    json.trim();
 
-    // Create json object, 256 bits gives more space than needed
-    StaticJsonDocument<256> doc;
 
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, json);
 
-     // Test if parsing succeeds
-    if (!error) {
-      // Transfer data from doc object to variables
-      v_desired = doc["translational_speed"].as<float>();
-      omega_desired = doc["angular_rate"].as<float>();
-      } else {
-      Serial.print(F("deserializeJson() failed: "));
-      Serial.println(error.f_str());
-    }
-  }
+  //    // Read in json msg from pi
+  //    String json = Serial.readStringUntil('\n');
+  //    json.trim();
+  //
+  //    Serial.print("JSON: ");
+  //    Serial.println(json);
+  //
+  //    // Create json object, 256 bits gives more space than needed
+  //    StaticJsonDocument<256> doc;
+  //
+  //    // Deserialize the JSON document
+  //    DeserializationError error = deserializeJson(doc, json);
+  //
+  //     // Test if parsing succeeds
+  //    if (!error) {
+  //      // Transfer data from doc object to variables
+  //      v_desired = doc["translational_speed"].as<float>();
+  //      omega_desired = doc["angular_rate"].as<float>();
+  //      } else {
+  //      Serial.print(F("deserializeJson() failed: "));
+  //      Serial.println(error.f_str());
+  //      return;
+  //    }
+
 
   if (t_now - t_last >= T) {
     // Estimate the rotational speed [rad/s]
     omega_L = 2.0 * PI * ((double)encoder_ticksL / (double)TPR) * 1000.0 / (double)(t_now - t_last);
     omega_R = 2.0 * PI * ((double)encoder_ticksR / (double)TPR) * 1000.0 / (double)(t_now - t_last);
-    
+
     // Estimate wheels translational speed
     v_L = omega_L * RHO;
     v_R = omega_R * RHO * (-1);
@@ -273,46 +284,72 @@ void loop() {
     // Compute vehicle speed and rate
     v = compute_vehicle_speed(v_L, v_R);
     omega = compute_vehicle_rate(v_L, v_R);
-    
+
     // Serial print commands, TX for transmission
     /*
-    Serial.print("TX_V");
-    Serial.print(v);
-    Serial.print("\t");
-    Serial.print("TX_W:");
-    Serial.print(omega);
-    Serial.print("\n");
+      Serial.print("TX_V");
+      Serial.print(v);
+      Serial.print("\t");
+      Serial.print("TX_W:");
+      Serial.print(omega);
+      Serial.print("\n");
     */
 
     // INSERT JSON READING HERE IF CURRENT FAILS
 
-    // Troubleshooting prints
-    /*
-    Serial.print("v_desired: ");
-    Serial.print(v_desired);
-    Serial.print("\t");
-    Serial.print("omega_desired: ");
-    Serial.println(omega_desired);
-    */
+    if (Serial.available() > 0) {
+      int index = 0;
+      JsonDocument doc;
 
-    // Determine the individual wheel speeds and direction
-    v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
-    v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
-    v_direction = determine_v_direction(v_desired, omega_desired);
-    
+      char jsonBuffer[50];
+      memset(jsonBuffer, 0, sizeof jsonBuffer);
+
+      while (Serial.available() > 0) {
+        jsonBuffer[index++] = Serial.read();
+        delayMicroseconds(250);
+      }
+
+      delayMicroseconds(300);
+
+      deserializeJson(doc, jsonBuffer);
+      v_desired = doc["t"].as<float>();
+      omega_desired = doc["a"].as<float>();
+    }
+
+    if (v_desired != v_desired_prev || omega_desired != omega_desired_prev ) {
+
+
+
+      // Troubleshooting prints
+      /*
+        Serial.print("v_desired: ");
+        Serial.print(v_desired);
+        Serial.print("\t");
+        Serial.print("omega_desired: ");
+        Serial.println(omega_desired);
+      */
+
+      // Determine the individual wheel speeds and direction
+      v_R_desired = compute_left_wheel_speed(v_desired, omega_desired);
+      v_L_desired = compute_right_wheel_speed(v_desired, omega_desired);
+      v_direction = determine_v_direction(v_desired, omega_desired);
+    }
     // Take absolute value before sending to PI controller REMINDER TO MAKE ABS VAL FUNCTION
     v_R_desired = abs_val(v_R_desired);
-    v_L_desired = abs_val(v_L_desired);    
-    
+    v_L_desired = abs_val(v_L_desired);
+
     // Troubleshooting prints
-    Serial.print("Direction: ");
-    Serial.print(v_direction);
-    Serial.print("v_R: ");
-    Serial.print("\t");
-    Serial.print(v_R_desired);
-    Serial.print("\t");
-    Serial.print("v_L: ");
-    Serial.println(v_L_desired);
+    //    Serial.print("Direction: ");
+    //    Serial.print(v_direction);
+    //    Serial.print("v_R: ");
+    //    Serial.print("\t");
+    //    Serial.print(v_R_desired);
+    //    Serial.print("\t");
+    //    Serial.print("v_L: ");
+    //    Serial.println(v_L_desired);
+
+    v_R = abs_val(v_R);
+    v_L = abs_val(v_L);
 
     // Find the proportional error in wheel speed
     e_nowR = v_R_desired - v_R;
@@ -328,7 +365,7 @@ void loop() {
     e_intLT += e_intL[i];
 
     i = (i + 1) % 5;        // Increment i and reset i when equal to 5
-    
+
     // Call PI controller
     u_L = PI_controller(e_nowL, e_intLT, k_p, k_i);
     u_R = PI_controller(e_nowR, e_intRT, k_p, k_i);
@@ -339,6 +376,10 @@ void loop() {
     // Reset the encoder ticks counter
     encoder_ticksR = 0;
     encoder_ticksL = 0;
+
+    v_desired_prev = v_desired;
+    omega_desired_prev = omega_desired;
+
   }
 
   // Switch case to set the direction of the motors
