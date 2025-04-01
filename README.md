@@ -22,7 +22,11 @@ open serial monitor on pi `screen /dev/serial/by-id/<usb_port_id> <baudrate>`
 >`screen /dev/serial/by-id/usb-ATMEL_mEDBG_CMSIS-DAP_24569C6163A133BEDC04-if01 9600` 
 >use ctrl + a, then k, then y to kill
 
-launch LiDAR and view in Rviz `ros2 launch sllidar_ros2 view_sllidar_a1_launch.py`
+launch LiDAR `ros2 run rplidar_ros rplidar_composition --ros-args -p serial_port:=/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0-port0 -p frame_id:=laser_link -p angle_compensate:=true -p scan_mode:=Standard -p serial_baudrate:=115200`
+
+Launch URDF `ros2 run robot_state_publisher robot_state_publisher bot_10.urdf` and `ros2 run joint_state_publisher_gui joint_state_publisher_gui`
+
+Rviz `rviz2` open bot_10.rviz
 
 launch gazebo `ing gazebo blank.sdf` (replace blank with map sdf file)
 
